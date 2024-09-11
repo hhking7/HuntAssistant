@@ -15,6 +15,7 @@
           "Microsoft.Maui.Controls.Compatibility": "8.0.80",
           "MudBlazor": "7.6.0",
           "MudBlazor.ThemeManager": "2.0.0",
+          "Plugin.Maui.Audio": "3.0.1",
           "System.Text.Json": "8.0.4",
           "runtimepack.Microsoft.Windows.SDK.NET.Ref": "10.0.19041.34"
         },
@@ -690,6 +691,14 @@
           }
         }
       },
+      "Plugin.Maui.Audio/3.0.1": {
+        "runtime": {
+          "lib/net8.0-windows10.0.19041/Plugin.Maui.Audio.dll": {
+            "assemblyVersion": "3.0.1.0",
+            "fileVersion": "3.0.1.0"
+          }
+        }
+      },
       "System.IO.Pipelines/8.0.0": {
         "runtime": {
           "lib/net8.0/System.IO.Pipelines.dll": {
@@ -1024,6 +1033,13 @@
       "sha512": "sha512-sCNRfRMy1QjzZOrbUNFlRxnvPgOtPlcM5Bc3UwMxrN9tCojr2CerDWZeT/bIMnJQs7fu57FsUY48rBkIcjYdtw==",
       "path": "mudblazor.thememanager/2.0.0",
       "hashPath": "mudblazor.thememanager.2.0.0.nupkg.sha512"
+    },
+    "Plugin.Maui.Audio/3.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bVbILV34AhaGOfVzcKXYl3zgZXZD7TrgyKSvG014z4uMhRNoq1reVwQXIOok6elpIgPWQ1o+j6o88ZqteTS8Fw==",
+      "path": "plugin.maui.audio/3.0.1",
+      "hashPath": "plugin.maui.audio.3.0.1.nupkg.sha512"
     },
     "System.IO.Pipelines/8.0.0": {
       "type": "package",
