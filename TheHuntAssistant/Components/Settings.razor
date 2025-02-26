@@ -1,0 +1,196 @@
+﻿@inject FileService _fileService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mx-2" Style="height: 100%; background-color: #2D3033">
+    <MudGrid Justify="Justify.Center" Style="background-color: #2D3033" Spacing="0">
+        <MudItem xs="12" Class="mb-4">
+            <MudStack AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.h4">Settings</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" Class="mb-4">
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                <div style="border: 2px white solid; min-width: 200px; min-height: 100px; display: flex; align-items: center; justify-content: center">
+                    <p style="        font-family: @CurrentSettings.Font;
+        font-size: @(CurrentSettings.FontSize + "px");
+        color: @CurrentSettings.TextColor;
+        font-weight : @(CurrentSettings.BoldText? "bold" : "normal");
+        font-style : @(CurrentSettings.ItalicText? "italic" : "normal");
+        text-shadow: 0 0 @(CurrentSettings.BorderThickness.ToString() + "px") #000, 0 0 @(CurrentSettings.BorderThickness.ToString() + "px") #000, 0 0 @(CurrentSettings.BorderThickness.ToString() + "px") #000, 0 0 @(CurrentSettings.BorderThickness.ToString() + "px") #000, 0 0 @(CurrentSettings.BorderThickness.ToString() + "px") #000
+">@CurrentSettings.FarmingText</p>
+</div>
+</MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd" Style="height: stretch">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Farming List Header</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="string" Variant="Variant.Filled" @bind-Value="CurrentSettings.FarmingText" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd" Style="height: stretch">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Font</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="string" Variant="Variant.Filled" @bind-Value="CurrentSettings.Font" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Font Size </MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="int" Variant="Variant.Filled" @bind-Value="CurrentSettings.FontSize" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd" Style="height: stretch">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Bold Text</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudCheckBox @bind-Value="CurrentSettings.BoldText" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd" Style="height: stretch">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Italic Text</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudCheckBox @bind-Value="CurrentSettings.ItalicText" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Border Thickness</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="int" Variant="Variant.Filled" @bind-Value="CurrentSettings.BorderThickness" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Text Color (#xxxxxx)</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="string" Variant="Variant.Filled" @bind-Value="CurrentSettings.TextColor" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudTooltip>
+        <TooltipContent>
+            <MudStack Row="true">
+                <MudText>Bullet point symbol in front of the list.</MudText>
+                <MudLink Href="https://www.w3schools.com/html/html_symbols.asp">Find more symbols here. (Number)</MudLink>
+            </MudStack>
+        </TooltipContent>
+        <ChildContent>
+            <MudStack Justify="Justify.FlexEnd">
+                <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Bullet Point</MudText>
+            </MudStack>
+        </ChildContent>
+    </MudTooltip>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="string" Variant="Variant.Filled" @bind-Value="CurrentSettings.ListSymbol" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">Refresh Rate (Refresh every X seconds)</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="int" Variant="Variant.Filled" @bind-Value="CurrentSettings.RefreshRate" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">List Width (in pixels)</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="int" Variant="Variant.Filled" @bind-Value="CurrentSettings.TargetWidth" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="4" Class="my-1">
+    <MudSpacer />
+</MudItem>
+<MudItem xs="2" Class="my-1">
+    <MudStack Justify="Justify.FlexEnd">
+        <MudText Typo="Typo.h6" Style="width: 150px; vertical-align: central">List Height (in pixels)</MudText>
+    </MudStack>
+</MudItem>
+<MudItem xs="6" Class="my-1">
+    <MudStack AlignItems="AlignItems.Start" Justify="Justify.Center">
+        <MudTextField T="int" Variant="Variant.Filled" @bind-Value="CurrentSettings.TargetHeight" FullWidth="false" DebounceInterval="100" />
+    </MudStack>
+</MudItem>
+<MudItem xs="12">
+    <MudStack Row="true" Justify="Justify.Center">
+        <MudButton Variant="Variant.Filled" OnClick="Save">Save</MudButton>
+    </MudStack>
+</MudItem>
+</MudGrid>
+</MudContainer>
+
+@code {
+    public TheHuntAssistant.Data.File.Settings CurrentSettings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentSettings = _fileService.GetSettings();
+    }
+
+    public void Save()
+    {
+        _fileService.SetSettings(CurrentSettings);
+    }
+}

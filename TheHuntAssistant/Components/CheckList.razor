@@ -1,0 +1,220 @@
+﻿@inject NavigationManager _navigationManager
+@inject ClipService _clipService
+@inject FileService _fileService
+@inject ISnackbar _Snackbar
+
+<MudTable Virtualize="true" Items="@Items" Class="mx-2" FixedHeader="true" Filter="new Func<Item, bool>(FilterFunc1)" RowsPerPage="int.MaxValue" Style="background-color: #2D3033; max-height: 80vh; overflow-y: scroll">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Items</MudText>
+        <MudSpacer />
+        <MudStack Row="true" AlignItems="AlignItems.End">
+            <MudTooltip Text="@("Shows only clips collected in the most recent stream.")">
+                <MudCheckBox @bind-Value="OnlyCurrentStream" Label="Filter current stream"></MudCheckBox>
+            </MudTooltip>
+            <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" DebounceInterval="100" Clearable="true"></MudTextField>
+        </MudStack>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.DedicatedDropSource)">Source</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.Points)">Points</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.DLC)">DLC</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.MayhemRequirement)">Mayhem Level</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x => x.Collected)">Collected</MudTableSortLabel></MudTh>
+        <MudTh>Clip</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+            <MudText Typo="Typo.h6">@context.Name</MudText>
+        </MudTd>
+        <MudTd DataLabel="Source" Style="background-color: #2D3033">
+            <MudText Typo="Typo.h6">@context.DedicatedDropSource</MudText>
+        </MudTd>
+        <MudTd DataLabel="Points" Style="background-color: #2D3033">
+            <MudText Typo="Typo.h6">@context.Points</MudText>
+        </MudTd>
+        <MudTd DataLabel="DLC" Style="background-color: #2D3033">
+            @switch (context.DLC)
+            {
+                case 0:
+                    <MudText Typo="Typo.h6">Base Game</MudText>
+                    break;
+                case 1:
+                    <MudText Typo="Typo.h6">Handsome Jackpot DLC</MudText>
+                    break;
+                case 2:
+                    <MudText Typo="Typo.h6">Guns, Love & Tentacles DLC</MudText>
+                    break;
+                case 3:
+                    <MudText Typo="Typo.h6">Bounty of Blood DLC</MudText>
+                    break;
+                case 4:
+                    <MudText Typo="Typo.h6">Fantastic Fustercluck DLC</MudText>
+                    break;
+                case 5:
+                    <MudText Typo="Typo.h6">Arms Race DLC</MudText>
+                    break;
+                case 6:
+                    <MudText Typo="Typo.h6">Director's Cut DLC</MudText>
+                    break;
+            }
+        </MudTd>
+        <MudTd DataLabel="Mayhem Level" Style="background-color: #2D3033">
+            <MudText Typo="Typo.h6">@context.MayhemRequirement</MudText>
+        </MudTd>
+        <MudTd DataLabel="Collected" Style="background-color: #2D3033">
+            <MudCheckBox Value="@context.Collected" @onclick="() => CollectItem(context)" />
+        </MudTd>
+        <MudTd DataLabel="Clip" Style="background-color: #2D3033">
+            @if (context.Collected)
+            {
+                if (string.IsNullOrEmpty(context.ClipId) || context.ClipId.Equals("null"))
+                {
+                    <MudText>No Clip</MudText>
+                }
+                else
+                {
+                    <MudStack Row="true">
+                        <MudTooltip Text="@("Open clip")">
+                            <MudIconButton OnClick="() => OpenClipAsync(context)" Icon="@Icons.Material.Filled.OpenInBrowser" Variant="Variant.Filled" />
+                        </MudTooltip>
+                        <MudTooltip Text="@("Edit clip. Limited to 24 hours after creation.")">
+                            <MudIconButton OnClick="() => EditClip(context)" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" />
+                        </MudTooltip>
+                    </MudStack>
+                }
+            }
+            else
+            {
+                <MudButton OnClick="() => CreateClip(context)">Clip</MudButton>
+            }
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }" Style="background-color: #2D3033" />
+    </PagerContent>
+</MudTable>
+@*}*@
+@code {
+    public List<Item> Items { get; set; } = new();
+    public List<Clip> Clips { get; set; } = new();
+
+    private string searchString1 = "";
+
+    private bool OnlyCurrentStream { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = _fileService.GetItems();
+        Clips = _fileService.GetClips();
+    }
+
+    private bool FilterFunc1(Item item) => FilterFunc(item, searchString1);
+
+    private bool FilterFunc(Item item, string searchString)
+    {
+        if (OnlyCurrentStream)
+        {
+            if (!item.Collected)
+                return false;
+            if (string.IsNullOrEmpty(item.ClipId))
+                return false;
+            if (Clips.First(c => c.Id.Equals(item.ClipId)).Title.Equals(GetMostRecentStream()))
+                return true;
+            else
+                return false;
+        }
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.DedicatedDropSource.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.Points.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.MayhemRequirement.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private async Task CollectItem(Item item)
+    {
+        item.Collected = !item.Collected;
+        try
+        {
+            _fileService.UpdateItems(item);
+            _fileService.UpdateScoreFile();
+
+        }
+        catch (Exception e)
+        {
+            _Snackbar.Add("Something went wrong trying to save the changes.");
+        }
+    }
+
+    private async Task OpenClipAsync(Item item)
+    {
+        await Task.Run(() => OpenClip(item));
+    }
+
+    private async Task OpenClip(Item item)
+    {
+        var clip = Clips.FirstOrDefault(c => c.Id.Equals(item.ClipId));
+        if (clip != null && !string.IsNullOrEmpty(clip.Url))
+        {
+            _navigationManager.NavigateTo(clip.Url);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Clipboard.Default.SetTextAsync(clip.Url);
+            });
+        }
+        else
+        {
+            clip = _fileService.FindClip(item.ClipId);
+            if (clip != null && !string.IsNullOrEmpty(clip.Url))
+            {
+                _navigationManager.NavigateTo(clip.Url);
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Clipboard.Default.SetTextAsync(clip.Url);
+                });
+            }
+        }
+    }
+
+    private async Task EditClip(Item item)
+    {
+        var clip = _fileService.FindClip(item.ClipId);
+        if (clip != null && !string.IsNullOrEmpty(clip.Edit_url) && DateTime.Now < clip.Edit_deadline)
+        {
+            _navigationManager.NavigateTo(clip.Edit_url);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Clipboard.Default.SetTextAsync(clip.Description.Replace(" + ", ""));
+            });
+        }
+    }
+
+    private async Task CreateClip(Item item)
+    {
+        _Snackbar.Add("Creating clip, this can take up to 30 seconds.");
+        _Snackbar.Add("You will be redirected as soon as the clip is ready.");
+        var clip = await _clipService.CreateClip($"Clip for {item.Name}");
+        if (clip.Id.Equals("Error"))
+        {
+            _Snackbar.Add(clip.Description);
+            return;
+        }
+        item.ClipId = clip.Id;
+        Clips.Add(clip);
+        _fileService.AddClip(clip);
+        _fileService.UpdateItems(item);
+        _navigationManager.NavigateTo(clip.Edit_url);
+    }
+
+    private string GetMostRecentStream()
+    {
+        return _fileService.GetClips().First(c => c.Created_at == _fileService.GetClips().Max(c => c.Created_at)).Title;
+    }
+
+}

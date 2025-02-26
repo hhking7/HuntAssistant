@@ -1,0 +1,41 @@
+﻿@inject NavigationManager _navigationManager
+@inject ClipService _clipService
+@inject FileService _fileService
+@inject ISnackbar _Snackbar
+@inject IDialogService _DialogService
+@using Data.Model
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="3">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UploadClipsAsync">UploadClips</MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    public List<ClipValidation> Clips { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Clips = _fileService.GetItemsCollectedLastStream().OrderBy(c => c.Name).ToList();
+    }
+
+    public async Task UploadClipsAsync()
+    {
+        foreach (var clip in Clips)
+        {
+            _navigationManager.NavigateTo(clip.Url);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Clipboard.Default.SetTextAsync(clip.Url);
+            });
+            var options = new DialogOptions { CloseOnEscapeKey = false, BackdropClick = false, FullScreen = true };
+            var parameters = new DialogParameters { ["Clip"] = clip };
+            var dialog = await _DialogService.ShowAsync<ShowClipDialog>("Validate Clip", parameters, options);
+            var result = await dialog.Result;
+            if (result!.Canceled)
+            {
+                //remove clip
+            }
+        }
+    }
+}

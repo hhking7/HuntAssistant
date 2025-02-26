@@ -1,0 +1,21 @@
+﻿<MudDialog DisableSidePadding="true" Style="background-color: #2D3033">
+    <DialogContent>
+        <MudStack AlignItems="AlignItems.Center" Spacing="4">
+            <MudText Color="Color.Primary" Typo="Typo.h3">What's your Twitch Username?</MudText>
+            <MudTextField Style="width: 40vw; color: white" Immediate="true" @bind-Value="Name" T="string" Variant="Variant.Filled" />
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Accept</MudButton>
+        </MudStack>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    public string Name { get; set; }
+
+    void Submit()
+    {
+        if (!string.IsNullOrEmpty(Name))
+            MudDialog.Close(DialogResult.Ok(Name));
+    }
+}

@@ -1,0 +1,28 @@
+﻿@inject FileService _fileService
+
+<MudGrid Class="mx-2" Justify="Justify.FlexStart" Style="background-color: #2D3033">
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <MudStack Justify="Justify.Center" Class="mb-3">
+            <MudText Typo="Typo.h4" Class="mb-3">Assets</MudText>
+            <MudText Typo="Typo.h6">All assets you'll need are stored at @Location</MudText>
+            <MudText Typo="Typo.h6">To use the app generated resources add the 2 html files (score.html and targets.html) as a local browser source. They'll be updated automatically when a value changes.</MudText>
+            <MudLink Href="https://www.blog.pulsoid.net/post/how-to-add-browser-source-in-obs-streamlabs-obs-twitch-studio-xsplit"><MudText Typo="Typo.h6">How to add a browser source.</MudText></MudLink>
+        </MudStack>
+        <MudDivider />
+        <MudStack Justify="Justify.Center" Class="my-4">
+            <MudText Typo="Typo.h4" Class="mb-3">Sounds</MudText>
+            <MudText Typo="Typo.h6">If any .mp3 files are placed inside @(Location)/SoundFiles a random .mp3 file will be played upon collecting items. (Add the app to OBS using 'Application Audio Capture' source)</MudText>
+            <MudText Typo="Typo.h5">If you wish to use this feature make sure to set it on an audiotrack that does not appear in the VOD!</MudText>
+            <MudText Typo="Typo.h6">You are solely responsible for the audio you play on your stream.</MudText>
+        </MudStack>
+    </MudContainer>
+</MudGrid>
+
+@code {
+    public string Location { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Location = _fileService.GetScoreLocation();
+    }
+}

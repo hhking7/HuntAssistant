@@ -1,0 +1,307 @@
+﻿@inject NavigationManager _navigationManager
+@inject AuthorizationService _authService
+@inject ClipService _clipService
+@inject FileService _fileService
+@inject SoundPlayerService _soundService
+@inject ISnackbar _Snackbar
+
+<MudGrid Justify="Justify.FlexStart" Class="mx-2" Style="height: 100%; background-color: #2D3033">
+    <MudItem xs="8" Style="height: stretch">
+        <MudTable Items="@CurrentlyFarming" FixedHeader="true" Style="background-color: #2D3033; min-height: 50vh; max-height: 60vh; overflow-y: scroll">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Currently farming</MudText>
+                <MudSpacer />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x=>x.DedicatedDropSource)">Source</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x=>x.Points)">Points</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x=>x.Collected)">Collected</MudTableSortLabel></MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @switch (context.Rarity)
+                {
+                    case 1:
+                        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                            <MudTooltip Text="@context.Type.ToString()">
+                                <MudText Style="color: #ffffff" Typo="Typo.h6">@context.Name</MudText>
+                            </MudTooltip>
+                        </MudTd>
+                        break;
+                    case 2:
+                        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                            <MudTooltip Text="@context.Type.ToString()">
+                                <MudText Style="color: #0bd23d" Typo="Typo.h6">@context.Name</MudText>
+                            </MudTooltip>
+                        </MudTd>
+                        break;
+                    case 3:
+                        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                            <MudTooltip Text="@context.Type.ToString()">
+                                <MudText Style="color: #2f78ff" Typo="Typo.h6">@context.Name</MudText>
+                            </MudTooltip>
+                        </MudTd>
+                        break;
+                    case 4:
+                        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                            <MudTooltip Text="@context.Type.ToString()">
+                                <MudText Style="color: #751c9c" Typo="Typo.h6">@context.Name</MudText>
+                            </MudTooltip>
+                        </MudTd>
+                        break;
+                    case 5:
+                        <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                            <MudTooltip Text="@context.Type.ToString()">
+                                <MudText Style="color: #e3c817" Typo="Typo.h6">@context.Name</MudText>
+                            </MudTooltip>
+                        </MudTd>
+                        break;
+                }
+
+                <MudTd DataLabel="Source" Style="background-color: #2D3033">
+                    <MudTooltip Text="@context.Map">
+                        <MudText Typo="Typo.h6">@context.DedicatedDropSource</MudText>
+                    </MudTooltip>
+                </MudTd>
+                <MudTd DataLabel="Points" Style="background-color: #2D3033">
+                    <MudText Typo="Typo.h6">@context.Points</MudText>
+                </MudTd>
+                <MudTd DataLabel="Collected" Style="background-color: #2D3033">
+                    <MudCheckBox @bind-Value="@context.Collected" />
+                </MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" OnClick="() => { CurrentlyFarming.Remove(context); _fileService.UpdateTargetFile(CurrentlyFarming.Select(i => i.Name).ToList()); }" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+        <MudStack AlignItems="AlignItems.End">
+            <MudStack AlignItems="AlignItems.Start">
+                <MudCheckBox @bind-Value="CreateClip" Label="@("Create clip upon pressing 'Collect'")" />
+                <MudCheckBox @bind-Value="CopyToClipboard" Label="@("Copy suggested clip title to clipboard upon pressing 'Collect'")" />
+                <MudCheckBox @bind-Value="OpenInBrowser" Label="@("Open clip editor once clip is ready. (Clips have to be edited and published within 24 hours after creation!")" />
+                <MudCheckBox @bind-Value="RemoveCollected" Label="@("Remove collected items from list")" />
+            </MudStack>
+            <MudButton OnClick="CollectItems" Variant="Variant.Filled">Collect</MudButton>
+            <MudButton Variant="Variant.Filled" OnClick="CreateAClip">Create Clip</MudButton>
+        </MudStack>
+    </MudItem>
+    <MudItem xs="4">
+        <MudStack>
+            <MudTable Items="AllItems" FixedHeader="true" Filter="new Func<Item,bool>(FilterFunc1)" Virtualize="true" Style="background-color: #2D3033; min-height: 50vh; max-height: 60vh; overflow-y: scroll">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Items</MudText>
+                    <MudSpacer />
+                    <MudStack AlignItems="AlignItems.End">
+                        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" DebounceInterval="100" Clearable="true"></MudTextField>
+                    </MudStack>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh></MudTh>
+                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Item, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudTooltip Text="Add to farming list">
+                            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" OnClick="() => { CurrentlyFarming.Add(Items.First(i => i.Name.Equals(context.Name))); _fileService.UpdateTargetFile(CurrentlyFarming.Select(i => i.Name).ToList()); }"></MudIconButton>
+                        </MudTooltip>
+                    </MudTd>
+                    <MudTd DataLabel="Name" Style="background-color: #2D3033">
+                        <MudTooltip Placement="Placement.Top">
+                            <TooltipContent>
+                                <MudStack>
+                                    @if (context.Collected)
+                                    {
+                                        <MudText>Already collected</MudText>
+                                    }
+                                    <MudText>@context.DedicatedDropSource</MudText>
+                                </MudStack>
+                            </TooltipContent>
+                            <ChildContent>
+                                <MudText Typo="Typo.h6">@context.Name</MudText>
+                            </ChildContent>
+                        </MudTooltip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+            <MudCheckBox Label="Only show uncollected items" @bind-Value="ShowUncollected" />
+        </MudStack>
+    </MudItem>
+</MudGrid>
+
+@code {
+    public List<Item> CurrentlyFarming { get; set; }
+    public List<Item> Items { get; set; }
+    public List<Item> AllItems { get; set; }
+
+    //Add this stuff to Settings
+    public bool CreateClip { get; set; } = true;
+    public bool CopyToClipboard { get; set; } = true;
+    public bool OpenInBrowser { get; set; } = true;
+    public bool RemoveCollected { get; set; } = true;
+    public bool ShowUncollected { get; set; } = true;
+
+    private string searchString1 = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Items = _fileService.GetItems();
+        AllItems = new List<Item>();
+        foreach (var item in Items)
+        {
+            AllItems.Add(item.Clone()); // Copy by value using Clone method
+        }
+        var targets = _fileService.GetTargets();
+        if (CurrentlyFarming == null)
+        {
+            CurrentlyFarming = new();
+        }
+        if (targets != null)
+        {
+            foreach (var target in targets)
+            {
+                var item = Items.Find(i => i.Name.Equals(target));
+                if (item != null)
+                    CurrentlyFarming.Add(item);
+            }
+        }
+    }
+
+    private bool FilterFunc1(Item item) => FilterFunc(item, searchString1);
+
+    private bool FilterFunc(Item item, string searchString)
+    {
+        if (ShowUncollected && item.Collected)
+            return false;
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (item.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.Map.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.DedicatedDropSource.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.Points.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (item.MayhemRequirement.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private async Task CreateAClip()
+    {
+        var description = "Doesn't matter";
+        _Snackbar.Add("Creating clip, this can take up to 30 seconds.");
+        _Snackbar.Add("You will be redirected as soon as the clip is ready.");
+        var clip = await _clipService.CreateClip(description);
+        if (clip != null)
+            _navigationManager.NavigateTo(clip.Edit_url);
+        else
+        {
+            _Snackbar.Add("Did not find clip", Severity.Error);
+        }
+    }
+
+    private async Task CollectItems()
+    {
+        if (CurrentlyFarming.Count == 0 || !CurrentlyFarming.Any(i => i.Collected))
+            return;
+
+        await _soundService.PlaySong(false);
+
+        foreach (var item in CurrentlyFarming)
+        {
+            if (item.Collected)
+            {
+                var dbitem = AllItems.Find(i => i.Name.Equals(item.Name));
+                if (dbitem == null)
+                {
+                    _Snackbar.Add("Something went wrong trying to save the changes.");
+                    return;
+                }
+                dbitem.Collected = true;
+            }
+        }
+
+        _fileService.UpdateItems(CurrentlyFarming);
+
+        if (CreateClip)
+        {
+            _Snackbar.Add("Creating clip, this can take up to 30 seconds.");
+            _Snackbar.Add("You will be redirected as soon as the clip is ready.");
+            var description = string.Empty;
+            foreach (var item in CurrentlyFarming.Where(i => i.Collected))
+            {
+                description += item.Name + " + ";
+            }
+            description.Remove(description.Length - 3);
+            var clip = await _clipService.CreateClip(description);
+            if (clip.Id.Equals("Error"))
+            {
+                var data = _fileService.GetData();
+                var json = await _authService.RefreshToken(data.RefreshToken);
+                if (json.Authorized)
+                {
+                    _fileService.SetToken(json.Token, json.RefreshToken);
+                    _fileService.Authorize();
+                }
+                else
+                {
+                    //Handle shit
+                }
+                clip = await _clipService.CreateClip(description);
+                if (clip.Id.Equals("Error"))
+                {
+                    _Snackbar.Add(clip.Description);
+                    return;
+                }
+            }
+            _fileService.AddClip(clip);
+            foreach (var item in CurrentlyFarming.Where(i => i.Collected))
+            {
+                item.ClipId = clip.Id;
+            }
+            try
+            {
+                _fileService.UpdateItems(CurrentlyFarming);
+            }
+            catch (Exception e)
+            {
+                _Snackbar.Add("Something went wrong trying to save the changes.");
+            }
+            if (OpenInBrowser)
+                _navigationManager.NavigateTo(clip.Edit_url);
+        }
+
+        if (CreateClip && CopyToClipboard)
+        {
+            var description = string.Empty;
+            foreach (var item in CurrentlyFarming.Where(i => i.Collected))
+            {
+                description += item.Name + " + ";
+            }
+            description = description.Remove(description.Length - 3);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                Clipboard.Default.SetTextAsync(description);
+            });
+        }
+
+        try
+        {
+            _fileService.UpdateItems(CurrentlyFarming);
+
+            if (RemoveCollected)
+            {
+                CurrentlyFarming.RemoveAll(i => i.Collected);
+            }
+
+            _fileService.UpdateScoreFile();
+            _fileService.UpdateTargetFile(CurrentlyFarming.Select(i => i.Name).ToList());
+        }
+        catch (Exception e)
+        {
+            _Snackbar.Add("Something went wrong trying to save the changes.");
+        }
+    }
+}

@@ -1,0 +1,23 @@
+﻿<MudDialog DisableSidePadding="true" Style="background-color: #2D3033">
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12"><MudText>Does the following clip show: @Clip.Name ?</MudText></MudItem>
+            <MudItem xs="6"><MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Cancel">No</MudButton></MudItem>
+            <MudItem xs="6">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Yes</MudButton>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TheHuntAssistant.Data.Model.ClipValidation Clip { get; set; }
+
+    public void Cancel() { MudDialog.Cancel(); }
+
+    public void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

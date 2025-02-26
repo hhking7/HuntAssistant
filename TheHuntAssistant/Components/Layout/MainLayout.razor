@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+@inject IJSRuntime JSRuntime;
+
+<MudThemeProvider Theme="_theme" IsDarkMode="true" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<MudMainContent Class="mud-width-full" Style="height: 100%">
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Style="height: 100%">
+        <ErrorBoundary>
+            <ChildContent>
+                @Body
+            </ChildContent>
+            <ErrorContent>
+                <MudText Color="Color.Primary" Typo="Typo.h4">@context.Message</MudText>
+                <MudText Color="Color.Primary">@context.StackTrace</MudText>
+            </ErrorContent>
+        </ErrorBoundary>
+    </MudContainer>
+</MudMainContent>
+
+@code
+{
+    public string Twitter = "https://twitter.com/hhking777";
+    public string Twitch = "https://www.twitch.tv/hhking";
+    public string Discord = "https://discord.gg/Vbrp3S2ahe";
+
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteDark = new PaletteDark
+        {
+            TextPrimary = "#FFFFFF",
+            Tertiary = "#2D3033"
+        }
+    };
+
+    public async void OpenLink(string url)
+    {
+        await JSRuntime.InvokeAsync<object>("open", url, "_blank");
+    }
+}

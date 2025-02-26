@@ -1,0 +1,123 @@
+﻿@page "/"
+@inject AuthorizationService _authService
+@inject FileService _fileService
+@inject ClipService _clipService
+@inject ISnackbar _Snackbar
+@inject IDialogService _DialogService
+@inject NavigationManager _NavigationManager
+
+@if (Initialized)
+{
+    <MudGrid Justify="Justify.FlexStart" Class="pb-2" Style="background-color: #2D3033; height: 100%">
+        <MudItem xs="12">
+            <MudTabs Position="Position.Left" Border="true" Style="background-color: #2D3033; height: 100%" Color="Color.Tertiary" SliderColor="Color.Transparent">
+                <MudTabPanel Text="Dashboard" Style="height: 100%; background-color: #2D3033">
+                    <Dashboard />
+                </MudTabPanel>
+                <MudTabPanel Text="Checklist" Style="height: 100%; background-color: #2D3033">
+                    <CheckList />
+                </MudTabPanel>
+                <MudTabPanel Text="Validate Clips" Style="height: 100%; background-color: #2D3033">
+                    <UploadClips />
+                </MudTabPanel>
+                <MudTabPanel Text="File Settings" Style="height: 100%; background-color: #2D3033">
+                    <Settings />
+                </MudTabPanel>
+                <MudTabPanel Text="App Settings" Style="height: 100%; background-color: #2D3033">
+                    <AppSettings />
+                </MudTabPanel>
+                <MudTabPanel Text="Setup" Style="height: 100%; background-color: #2D3033">
+                    <Assets />
+                </MudTabPanel>
+                <MudTabPanel Text="About" Style="height: 100%; background-color: #2D3033">
+                    <About />
+                </MudTabPanel>
+            </MudTabs>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <Loading />
+}
+
+@code{
+    public bool Initialized { get; set; } = false;
+    private DataFile Data { get; set; }
+    private Data.File.Settings Settings { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Initialized = true;
+        Settings = _fileService.GetSettings();
+        Data = _fileService.GetData();
+
+        //Terms and Conditions
+
+        if (String.IsNullOrEmpty(Data.Name))
+            await GetStreamerName();
+        if (String.IsNullOrEmpty(Data.Code))
+        {
+            var code = await _authService.Auth();
+            Data.Code = code;
+            _fileService.SetCode(code);
+        }
+        var json = new JsonFormat();
+        if (String.IsNullOrEmpty(Data.Token))
+        {
+            json = await _authService.GetToken(Data.Code);
+        }
+        else
+        {
+            json = await _authService.RefreshToken(Data.RefreshToken);
+        }
+        if (json.Authorized)
+        {
+            _fileService.SetToken(json.Token, json.RefreshToken);
+            _fileService.Authorize();
+            Data.Token = json.Token;
+            Data.RefreshToken = json.RefreshToken;
+            Data.Authorized = true;
+        }
+        else
+        {
+            //Handle Shit
+        }
+        if (String.IsNullOrEmpty(Data.BroadcasterId))
+        {
+            var id = await _authService.UserId(Data.Token);
+            if (!string.IsNullOrEmpty(id))
+            {
+                _fileService.SetBroadcasterId(id);
+                Data.BroadcasterId = id;
+            }
+            else
+            {
+                //Handle Shit
+            }
+        }
+        _Snackbar.Add("Succesfully loaded Twitch credentials");
+        StateHasChanged();
+    }
+
+    private async Task GetStreamerName()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = false, BackdropClick = false, FullScreen = true };
+        var dialog = await _DialogService.ShowAsync<StreamerNameDialog>("Twitch Username", options);
+        var name = ((string)(await dialog.Result).Data).ToLower();
+        _fileService.SetName(name);
+        Data.Name = name;
+    }
+
+    private async Task CreateClip(Item item)
+    {
+        _Snackbar.Add("Creating clip, this can take up to 30 seconds!");
+        var clip = await _clipService.CreateClip($"Clip for {item.Name}");
+        if (clip.Id.Equals("Error"))
+        {
+            _Snackbar.Add(clip.Description);
+            return;
+        }
+        _NavigationManager.NavigateTo(clip.Edit_url);
+    }
+}

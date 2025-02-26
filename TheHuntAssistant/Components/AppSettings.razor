@@ -1,0 +1,57 @@
+﻿@inject FileService _fileService
+@inject SoundPlayerService _soundService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mx-2" Style="height: 100%; background-color: #2D3033">
+    <MudGrid Justify="Justify.Center" Style="background-color: #2D3033" Spacing="0">
+        <MudItem xs="12" Class="mb-4">
+            <MudStack AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.h4">Settings</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="5">
+            <MudSpacer />
+        </MudItem>
+        <MudItem xs="7">
+            <MudText Typo="Typo.h6">Sound Volume</MudText>
+        </MudItem>
+        <MudItem xs="5">
+            <MudSpacer />
+        </MudItem>
+        <MudItem xs="7">
+            <MudSlider T="double" Min="0" Max="100" Variant="Variant.Filled" Value="CurrentSettings.Volume" ValueLabel="true" ValueChanged="ChangeVolume" Style="width: 20vw" />
+        </MudItem>
+        <MudItem xs="5">
+            <MudSpacer />
+        </MudItem>
+        <MudItem xs="7">
+            <MudButton Variant="Variant.Filled" OnClick="PlayTestSound">Play test sound</MudButton>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    @code {
+        public TheHuntAssistant.Data.File.Settings CurrentSettings { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            CurrentSettings = _fileService.GetSettings();
+        }
+
+        public void Save()
+        {
+            _fileService.SetSettings(CurrentSettings);
+        }
+
+        public async Task PlayTestSound()
+        {
+            await _soundService.PlaySong(true);
+        }
+
+        public async Task ChangeVolume(double volume)
+        {
+            CurrentSettings.Volume = volume;
+            _fileService.SetSettings(CurrentSettings);
+        }
+    }
+}
