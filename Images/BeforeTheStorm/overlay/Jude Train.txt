@@ -1,0 +1,33 @@
+Jude Trains!
+
+The Jude Train is a concept to incentivise donation trains during The Hunt and any other BCFT events.
+
+The following is a suggestion of how to utilise and make the most out of the idea for your stream.
+
+First you'll need the Jude Train overlay that can be found in the overlay.zip folder available on
+The Hunt website and Discord.
+
+Next you'll need a countdown timer plugin for OBS. There are many of these available for free, and
+each serves the basic functionality but some offer more uses, so a quick Google search will lead you
+to one that works for your needs!
+
+Once you have set them both up in OBS, you're ready to go. For extra convenience I suggest having both
+the overlay image and clock source in a folder within your OBS sources to keep it tidy, and either hotkey
+or use a Stream Deck to toggle it's visibility on the fly. This isn't essential and can be done manually
+by simply clicking the eye icon next to the source in OBS's source list.
+
+Now that you're set up, let's create a mental list of trigger points for opportunities. These could be
+anything from a Boss Kill, A Loot Drop, Finishing a Mission, Top Of The Hour, Every 30 minutes... the
+list goes on. Having trigger points help people pool their donations and can also incentivise people who
+might not be able to donate large sums to join in with something as small as one dollar. Once you have
+a trigger point set up and you get your first donation, start the timer and reveal the overlay! 
+
+Now it's up to you to hype your community up and start the donation train. Even something simple as one dollar per donater goes a long way. You could see how many seperate donations you can get in a 5 minute window, then try and beat that each time you trigger the train. Or you can have the timer reset back to 5 minutes with every new donation, and see how long you can keep it going! Think like a subathon timer, but for donations. The only limit is your imagination!
+
+For font choice and colour gradiant, please follow the guide for the Hunt Overlay found inside the .zip
+folder. There is space at the top and bottom of the overlay box for any flavour text you may want to add.
+In the Overlay Example image inside the .zip folder, you will see an example of text style and placement
+with the "EVERY DONATION RESETS TIMER!" text there.
+
+
+
