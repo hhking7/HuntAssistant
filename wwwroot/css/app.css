@@ -20,6 +20,57 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+.hunt-workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    min-width: 0;
+}
+
+.hunt-switcher {
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.hunt-page {
+    display: flow-root;
+    min-width: 0;
+    padding-top: 24px;
+}
+
+.hunt-data-spoiler summary {
+    cursor: pointer;
+    width: fit-content;
+}
+
+.hunt-data-spoiler p {
+    overflow-wrap: anywhere;
+}
+
+.dashboard-item-picker {
+    min-width: 0;
+}
+
+.dashboard-item-picker table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.dashboard-item-picker th:first-child,
+.dashboard-item-picker td:first-child {
+    width: 72px;
+}
+
+.dashboard-item-picker td .mud-typography-h6 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dashboard-item-picker .mud-input-control {
+    min-width: 0;
+}
+
 h1:focus {
     outline: none;
 }
